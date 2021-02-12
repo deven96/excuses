@@ -51,6 +51,7 @@ testCheckScreenLockedMac() {
 }
 
 
+# screenActive=1 means the screen is active
 # Linux variant to check if screen is locked
 function checkScreenLockedLinux {
   gnome-screensaver-command -q | grep -q "is active"
@@ -194,7 +195,7 @@ function main() {
 
 #TODO: use getopts for these options
 # number in seconds after system sleep to send message
-rc_file=.examplerc
+rc_file=.bashrc
 start_time="09:00"
 end_time="21:00"
 MAX_TIME_AWAY_IN_SECS=10
