@@ -18,6 +18,8 @@ Send an excuse to your "I will be away" Channel on slack after x seconds away fr
 Make sure excuses is executable
 ```bash
 chmod +x ./excuses.sh
+# Run the tests
+./excuses.sh -t
 ```
 
 Use nohup to run in background

@@ -117,9 +117,48 @@ function checkOrIncludeVariable {
 function runIfWorkPeriod {
   currenttime=$(date +%H:%M)
   if [[ "$currenttime" > "$start_time" ]] && [[ "$currenttime" < "$end_time" ]]; then
-    echo "In work period $currenttime"
     "$@"
   fi
+}
+
+function testRunIfWorkPeriodLinux {
+  start_time=$(date -d '-1 hour' +%H:%M)
+  end_time=$(date -d '+1 hour' +%H:%M)
+  answer=$(runIfWorkPeriod echo 1)
+  if [[ $answer == 1 ]]; then
+    echo -e "${GREEN}Ran correctly during work period${NORMAL}"
+  else
+    echo -e "${RED}Failed to run during work${NORMAL}"
+  fi
+  start_time=$(date -d '-2 hour' +%H:%M)
+  end_time=$(date -d '-1 hour' +%H:%M)
+  answer=$(runIfWorkPeriod echo 1)
+  if [[ $answer != 1 ]]; then
+    echo -e "${GREEN}Did not run outside work period${NORMAL}"
+  else
+    echo -e "${RED}Ran outside work period${NORMAL}"
+  fi
+
+}
+
+function testRunIfWorkPeriodMac {
+  start_time=$(date -v-1H +%H:%M)
+  end_time=$(date -v+1H +%H:%M)
+  answer=$(runIfWorkPeriod echo 1)
+  if [[ $answer == 1 ]]; then
+    echo -e "${GREEN}Ran correctly during work period${NORMAL}"
+  else
+    echo -e "${RED}Failed to run during work${NORMAL}"
+  fi
+  start_time=$(date -v-2H +%H:%M)
+  end_time=$(date -v-1H +%H:%M)
+  answer=$(runIfWorkPeriod echo 1)
+  if [[ $answer != 1 ]]; then
+    echo -e "${GREEN}Did not run outside work period${NORMAL}"
+  else
+    echo -e "${RED}Ran outside work period${NORMAL}"
+  fi
+
 }
 
 function sendMessageToSlackChannel {
@@ -137,6 +176,8 @@ function checkSlackUtilityExists {
     echo -e "${GREEN}Complete!${NORMAL}"
   fi
 }
+
+
 helpFunction() {              
   echo -e "${BLUE}Usage: $0 -p ~/.bashrc"
   echo -e "\t-p Specify rc file to put variables in (default: ~/.bashrc)"
@@ -153,6 +194,14 @@ helpFunction() {
       ${NORMAL}"
   exit 1                               
    }
+
+runTests(){
+  checkOS
+  testCheckScreenLocked$machine
+  testSelectRandomExcuse
+  testRunIfWorkPeriod$machine
+  exit
+}
 
 function main() {
   # first check variable in bashrc or initialize to zero
@@ -200,7 +249,7 @@ start_time="09:00"
 end_time="21:00"
 MAX_TIME_AWAY_IN_SECS=10
 SLEEP_BETWEEN_RUNS=10
-while getopts "p:s:r:e:m:h" opt   
+while getopts "p:s:r:e:m:th" opt   
 do                
   case "$opt" in      
     p ) export rc_file="$OPTARG" ;;
@@ -208,6 +257,7 @@ do
     e ) export end_time="$OPTARG";;
     r ) export SLEEP_BETWEEN_RUNS="$OPTARG";;
     m ) export MAX_TIME_AWAY_IN_SECS="$OPTARG";;
+    t)  runTests ;;
     h ) helpFunction ;;                        
   esac   
 done
