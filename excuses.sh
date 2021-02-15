@@ -244,10 +244,10 @@ function main() {
 
 #TODO: use getopts for these options
 # number in seconds after system sleep to send message
-rc_file=.bashrc
+rc_file=.excusesrc
 start_time="09:00"
 end_time="21:00"
-MAX_TIME_AWAY_IN_SECS=10
+MAX_TIME_AWAY_IN_SECS=3600
 SLEEP_BETWEEN_RUNS=10
 while getopts "p:s:r:e:m:th" opt   
 do                
